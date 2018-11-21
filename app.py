@@ -22,4 +22,4 @@ def index():
     if not os.environ.get("API_KEY"):
         raise RuntimeError("API_KEY not set")
     #return render_template("index.html", key=os.environ.get("API_KEY"))
-    return "Hello"
+    return render_template("hello.html")
