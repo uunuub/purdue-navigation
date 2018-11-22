@@ -1,20 +1,12 @@
 import os
 import re
-from flask import Flask, jsonify, render_template, request, url_for
-from flask_jsglue import JSGlue
+from flask import Flask, jsonify, render_template, request, flash, url_for, session, jsonify
 
-# configure application
 app = Flask(__name__)
-JSGlue(app)
 
-# ensure responses aren't cached
-if app.config["DEBUG"]:
-    @app.after_request
-    def after_request(response):
-        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-        response.headers["Expires"] = 0
-        response.headers["Pragma"] = "no-cache"
-        return response
+# Load config
+app.config.from_object("config")
+
 
 @app.route("/")
 def index():
