@@ -1,22 +1,41 @@
 from bs4 import BeautifulSoup
 from urllib.parse import urlencode
+
 import urllib3.contrib.pyopenssl 
 import requests, urllib3, certifi
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Enable certificate
-urllib3.contrib.pyopenssl.inject_into_urllib3()
+import datetime
+# Uncomment to enable debug requests
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 # Purdue course schedule url
-schedule_url = "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_search_schedule?"
+SCHEDULE_URL = "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_search_schedule"
 
-# Form query parameters and new url
-query_param = {"term": 201910, "subject": "CS"}
-url = schedule_url + urlencode(query_param)
+def getToday():
+    # Get current day numbeR
+    weekdays = ("M", "T", "W", "R", "F", "S", "U")
+    # Current date
+    return weekdays[datetime.datetime.today().weekday()]
 
-# Request page
-http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
-req = http.request("GET", url)
-print(req.data)
+def getSchedule():
+    # Get today one character form
+    today = getToday()
+
+    # Enable certificate
+    urllib3.contrib.pyopenssl.inject_into_urllib3()
+
+    # Form query url with current day
+    query_url = SCHEDULE_URL + "?" + "days=" + today + "&subject=CS"
+
+    # PoolManager instance to make requests
+    http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
+
+    # Request page containing schedule
+    req = http.request("GET", query_url)
+    
+    return req.data
+
+    
+
+
