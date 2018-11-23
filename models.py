@@ -92,21 +92,17 @@ class Course(Base):
 	instructor_id = db.Column(db.Integer, db.ForeignKey("instructor.id"))
 	time_id = db.Column(db.Integer, db.ForeignKey("time.id"))
 	# Bitwise operations will be used to extract available days
-	days = db.Column(db.CHAR(1), default=0)
+	days = db.Column(db.CHAR(1), default=0) 
 
 	# Connect other models to Course
-	name = db.relationship("Name", foreign_keys=[name_id], backref=db.backref("course", lazy="dynamic"))
-	number = db.relationship("Number", foreign_keys=[number_id], backref=db.backref("course", lazy="dynamic"))
-	crn = db.relationship("CRN", foreign_keys=[crn_id], backref=db.backref("course", lazy="dynamic"))
-	building = db.relationship("Building", foreign_keys=[building_id], backref=db.backref("course", lazy="dynamic"))
-	room = db.relationship("Room", foreign_keys=[room_id], backref=db.backref("course", lazy="dynamic"))
-	stype = db.relationship("Type", foreign_keys=[type_id], backref=db.backref("course", lazy="dynamic"))
-	instructor = db.relationship("Instructor", foreign_keys=[instructor_id], backref=db.backref("course", lazy="dynamic"))
-	time = db.relationship("Time", foreign_keys=[time_id], backref=db.backref("course", lazy="dynamic"))
-
-	def __repr__(self):
-		print(self.number, self.name)
-
+	name = db.relationship("Name", backref=db.backref("courses", lazy="dynamic"))
+	number = db.relationship("Number", backref=db.backref("courses", lazy="dynamic"))
+	crn = db.relationship("CRN", backref=db.backref("courses", lazy="dynamic"))
+	building = db.relationship("Building", backref=db.backref("courses", lazy="dynamic"))
+	room = db.relationship("Room", backref=db.backref("courses", lazy="dynamic"))
+	stype = db.relationship("Type", backref=db.backref("courses", lazy="dynamic"))
+	instructor = db.relationship("Instructor", backref=db.backref("courses", lazy="dynamic"))
+	time = db.relationship("Time", backref=db.backref("courses", lazy="dynamic"))
 
 
 
