@@ -1,11 +1,13 @@
-from bs4 import BeautifulSoup
-from contextlib import closing
 from urllib.parse import urlencode
-
 import urllib3.contrib.pyopenssl 
 import requests, urllib3, certifi
 
+from bs4 import BeautifulSoup
 import datetime
+
+from app import db
+from models import Time, Instructor, Type, Room, Building, CRN, Number, Name, Course
+
 # Uncomment to enable debug requests
 # import logging
 # logging.basicConfig(level=logging.DEBUG)
@@ -38,40 +40,47 @@ def getSchedule():
 	
 	return req.data
 
-def parseSchedule():
+def parseSchedule(raw_sched):
 	# Get scraped schedule page
-	raw_sched = getSchedule()
 	html = BeautifulSoup(raw_sched, "html5lib")
 
 	# Find the text content within th tags and split them by "-" to get course titles
 	course_titles = []
 	for tag in html.findAll("th", {"class": "ddlabel"}):
-		current_course = [] 
+		# Current course titles	
+		current = [] 
 		for content in tag.a.contents[0].split("-"):
-			current_course.append(content.strip(" "))
-		course_titles.append(current_course)
-	for i in course_titles:
-		print(i)
-
+			current.append(content.strip(" "))	
+		# Split Subject & Number	
+		current = current[:2] + current[2].split(" ") + current[3:]
+		# Add course to collection
+		course_titles.append(current)
+	
 	# Find all course details
 	course_details = []
 	for tag in html.findAll("table", {"class": "datadisplaytable"}):
 		# Skip if it's not a course tr tag
 		if(len(tag.contents) < 3):
 			continue
-		current_course = []
+		current = []
 		# Get all td tags within course tr tag
 		for td in tag.tbody.findNext("tr").findNext("tr").findAll("td"):
 			if len(td.contents) == 1:
-				current_course += td.contents	
+				current += td.contents	
 			# Avoid additionall tags within instructor tags	
 			else:
-				current_course.append(td.contents[0][:-2])
-		course_details.append(current_course)	
-	
-	# for i in course_details:
-	# 	print(i)
+				current.append(td.contents[0][:-2])	
+		# Add course to collection
+		course_details.append(current)	
 
-parseSchedule() 
+	# Remove first element since it's not a course table	
+	course_details = course_details[1:]
+
+	return course_titles, course_details
+
+def storeSchedule(titles, details):
+	for i, j in title:
+		print(i + j)
+	return	
 
 
