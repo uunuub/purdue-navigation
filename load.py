@@ -79,7 +79,7 @@ def parseSchedule(raw_sched):
 	return course_titles, course_details
 
 def storeSchedule(titles, details):
-	for i, j in title:
+	for i, j in zip(titles, details):
 		print(i + j)
 	return	
 
