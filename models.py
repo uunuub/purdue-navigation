@@ -70,6 +70,14 @@ class Number(Base):
 	def __repr__(self):
 		return str(self.number)
 
+# Model for course subject
+class Subject(Base):
+	__tablename__ = "subject" 
+	subject = db.Column(db.String(50), unique=True)
+
+	def __repr__(self):
+		return self.subject
+
 # Model for course name
 class Name(Base):
 	__tablename__ = "name" 
@@ -84,6 +92,7 @@ class Course(Base):
 	# Foreign Keys of other tables
 	name_id = db.Column(db.Integer, db.ForeignKey("name.id"))
 	number_id = db.Column(db.Integer, db.ForeignKey("number.id"))
+	subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"))
 	crn_id = db.Column(db.Integer, db.ForeignKey("crn.id"))
 	building_id = db.Column(db.Integer, db.ForeignKey("building.id"))
 	room_id = db.Column(db.Integer, db.ForeignKey("room.id"))
@@ -96,6 +105,7 @@ class Course(Base):
 	# Connect other models to Course
 	name = db.relationship("Name", backref=db.backref("courses", lazy="dynamic"))
 	number = db.relationship("Number", backref=db.backref("courses", lazy="dynamic"))
+	subject = db.relationship("Subject", backref=db.backref("courses", lazy="dynamic"))
 	crn = db.relationship("CRN", backref=db.backref("courses", lazy="dynamic"))
 	building = db.relationship("Building", backref=db.backref("courses", lazy="dynamic"))
 	room = db.relationship("Room", backref=db.backref("courses", lazy="dynamic"))
