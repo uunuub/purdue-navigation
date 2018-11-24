@@ -30,8 +30,9 @@ Returns:
 	string -- A character indicating current day
 """
 def getToday():
-	# Get current day numbeR
-	weekdays = ("M", "T", "W", "R", "F", "S", "U")
+	# Get current day number, ignored weekends
+	weekdays = ("M", "T", "W", "R", "F", "F", "F")
+	
 	# Current date
 	return weekdays[datetime.datetime.today().weekday()]
 
@@ -49,7 +50,10 @@ def getSchedule():
 
 	# Form query url with current day
 	params = {"days": today, "subject": "CS"}
-	query_url = SCHEDULE_URL + "?" + "days=" + today + "&subject=CS"
+	query_url = SCHEDULE_URL + "?" + "days=" + today + "&subject=CS"	
+	
+	# Log queried url
+	print(query_url)
 
 	# PoolManager instance to make requests
 	http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
@@ -145,7 +149,7 @@ def storeSchedule(course_info):
 	return df
 
 def load(session, df):
-	#print(df.to_string())
+	print(df.to_string())
 	# Add to database unique values
 	uniques = {}
 	for col in df:
@@ -153,7 +157,7 @@ def load(session, df):
 		uniques[col] = df[col].unique().tolist()
 
 	pp = pprint.PrettyPrinter(indent=4)
-	pp.pprint(uniques)
+	#pp.pprint(uniques)
 
 
 	# Write unique values to database

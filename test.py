@@ -36,7 +36,7 @@ def addModels(session):
 
 if __name__ == "__main__":
 	# Create sqlite engine
-	engine = create_engine("sqlite:///test.db", echo=True)
+	engine = create_engine("sqlite:///test.db")#, echo=True)
 	# Generate same schema as the application
 	db.metadata.create_all(engine)
 
