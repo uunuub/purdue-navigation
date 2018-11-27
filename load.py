@@ -1,4 +1,3 @@
-from app import db
 from models import Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
 
 from urllib.parse import urlencode
@@ -18,11 +17,10 @@ import pprint
 # Purdue course schedule url
 SCHEDULE_URL = "https://selfservice.mypurdue.purdue.edu/prod/bzwsrch.p_search_schedule"
 
-def clear_data(session):
-    meta = db.metadata
-    for table in reversed(meta.sorted_tables):
-        session.execute(table.delete())
-    session.commit()
+def clear_data(session, metadata):
+	for table in reversed(metadata.sorted_tables):
+		session.execute(table.delete())
+	session.commit()
 
 """Gets current day in one character notation
 
@@ -131,7 +129,7 @@ def storeSchedule(course_info):
 	# 	print(i)
 
 	# We will be utilizing pandas for easier manipulation
-	headers = ["name", "crn", "subj", "number", "time", "days", "location", "date", "type", "instructor"]
+	headers = ["name", "crn", "subject", "number", "time", "days", "location", "date", "stype", "instructor"]
 	df = pd.DataFrame(course_info, columns=headers)
 	# Currently there is no need for #8 - Start, End Date
 	df.drop(columns=["date"], inplace=True)
@@ -157,32 +155,46 @@ def load(session, df):
 		uniques[col] = df[col].unique().tolist()
 
 	pp = pprint.PrettyPrinter(indent=4)
-	#pp.pprint(uniques)
+	# pp.pprint(uniques)
 
+	# Dictionary containing class objects
+	models = {
+		"name": Name,
+		"number": Number,
+		"crn": CRN,
+		"building": Building,
+		"subject": Subject,
+		"instructor": Instructor,
+		"stype": Type,
+		"room": Room,
+		"time": Time
+	}
 
 	# Write unique values to database
 	for k, vals in uniques.items():
+		if k == "time" or k == "days":
+			continue
 		for v in vals:		
-			if k == "name":
-				session.add(Name(name=v))
-			elif k == "number":
-				session.add(Number(number=v))
-			elif k == "crn":
-				session.add(CRN(crn=v))
-			elif k == "building":
-				session.add(Building(building=v))
-			elif k == "subject":
-				session.add(Subject(Subject=v))
-			elif k == "instructor":
-				session.add(Instructor(instructor=v))
-			elif k == "type":
-				session.add(Type(stype=v))
-			elif k == "room":
-				session.add(Room(room=v))
-			elif k == "building":
-				session.add(Building(building=v))
-			elif k == "time":
-				continue
-				# session.add(Type(type=v)
+			session.add(models[k](**{k: v}))
 	session.commit()
+
+	# Iterate over each courses
+	for index, row in df.iterrows():
+		session.add(Course(name_id=Name.query.filter_by(name=row["name"]).first().id,
+							number_id=Number.query.filter_by(number=row["number"]).first().id,
+							subject_id=Subject.query.filter_by(subject=row["subject"]).first().id,
+							crn_id=CRN.query.filter_by(crn=row["crn"]).first().id,
+							building_id=Building.query.filter_by(building=row["building"]).first().id,
+							room_id=Room.query.filter_by(room=row["room"]).first().id,
+							type_id=Type.query.filter_by(stype=row["stype"]).first().id,
+							instructor_id=Instructor.query.filter_by(instructor=row["instructor"]).first().id,
+							days=row["days"]))	
+				# session.add(Type(type=v)
+		session.commit()
+
+
+	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
+	option = join_tables.filter(Number.number.like(18000)).all()
+	for i in option:
+		print(i.name, i.number, i.stype, i.building)
 
