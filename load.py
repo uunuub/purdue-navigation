@@ -48,10 +48,10 @@ def getSchedule():
 
 	# Form query url with current day
 	params = {"days": today, "subject": "CS"}
-	query_url = SCHEDULE_URL + "?" + "days=" + today + "&subject=CS"	
+	query_url = SCHEDULE_URL + "?" + "days=" + today
 	
 	# Log queried url
-	print(query_url)
+	# print(query_url)
 
 	# PoolManager instance to make requests
 	http = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
@@ -83,6 +83,7 @@ def parseSchedule(raw_sched):
 		current = current[:2] + current[2].split(" ") + current[3:]
 		# Remove last element, class number
 		current.pop(len(current) - 1)
+		
 		# Add course to collection
 		course_titles.append(current)
 	
@@ -92,14 +93,19 @@ def parseSchedule(raw_sched):
 		# Skip if it's not a course tr tag
 		if(len(tag.contents) < 3):
 			continue
+
 		current = []
 		# Get all td tags within course tr tag
 		for td in tag.tbody.findNext("tr").findNext("tr").findAll("td"):
-			if len(td.contents) == 1:
+			# If content has more tags, means it's insturctor tag
+			if len(td.contents) > 1:
+				current.append(td.contents[0][:-2])
+			# Check if tag is TBA tag
+			elif td.contents[0].find("TBA") != -1:
+				current.append("TBA")
+			# Concatenate if it's just other tags
+			elif len(td.contents) == 1:
 				current += td.contents	
-			# Avoid additionall tags within instructor tags	
-			else:
-				current.append(td.contents[0][:-2])	
 
 		# Remove first element, a literal string "Class"
 		current.pop(0)
@@ -131,10 +137,11 @@ def storeSchedule(course_info):
 	# We will be utilizing pandas for easier manipulation
 	headers = ["name", "crn", "subject", "number", "time", "days", "location", "date", "stype", "instructor"]
 	df = pd.DataFrame(course_info, columns=headers)
+
 	# Currently there is no need for #8 - Start, End Date
 	df.drop(columns=["date"], inplace=True)
 
-	# Change time column to list of datetime.time()s
+	# Change time column to list of datetime.time()
 	start, end = df["time"].str.split(" - ").str
 	start = start.apply(lambda stime: datetime.datetime.strptime(stime, "%I:%M %p").time())
 	end = end.apply(lambda stime: datetime.datetime.strptime(stime, "%I:%M %p").time())
@@ -144,10 +151,12 @@ def storeSchedule(course_info):
 	df["building"], df["room"] = df["location"].str.rsplit(" ", 1).str
 	df.drop(columns=["location"], inplace=True)
 
+	# Drop rows with NaN
+	df.dropna(inplace=True)
+
 	return df
 
 def load(session, df):
-	print(df.to_string())
 	# Add to database unique values
 	uniques = {}
 	for col in df:
@@ -178,6 +187,8 @@ def load(session, df):
 			session.add(models[k](**{k: v}))
 	session.commit()
 
+
+	print(df.to_string())
 	# Iterate over each courses
 	for index, row in df.iterrows():
 		session.add(Course(name_id=Name.query.filter_by(name=row["name"]).first().id,
@@ -189,12 +200,4 @@ def load(session, df):
 							type_id=Type.query.filter_by(stype=row["stype"]).first().id,
 							instructor_id=Instructor.query.filter_by(instructor=row["instructor"]).first().id,
 							days=row["days"]))	
-				# session.add(Type(type=v)
 		session.commit()
-
-
-	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
-	option = join_tables.filter(Number.number.like(18000)).all()
-	for i in option:
-		print(i.name, i.number, i.stype, i.building)
-

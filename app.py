@@ -1,6 +1,9 @@
 import os, re
-import load
+
+import click
 from flask import Flask, jsonify, render_template, request, flash, url_for, session, jsonify
+from flask_script import Manager, Server
+
 from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
 from load import getSchedule, parseSchedule, storeSchedule, load, clear_data
 app = Flask(__name__)
@@ -12,6 +15,27 @@ app.config.from_object("config")
 db.init_app(app)
 db.create_all(app=app)
 
+@app.cli.command()
+def init():
+    with app.app_context():
+        # Log Loading
+        app.logger.info("Start Loading Data...")
+        
+        # Clear data in database
+        clear_data(db.session, db.metadata)
+
+        # Get Raw HTML with schedule
+        raw_sched = getSchedule()
+
+        # Parse HTML and store schedule into dataframe
+        course_info = parseSchedule(raw_sched)
+        df = storeSchedule(course_info)
+
+        # Load data into database
+        load(db.session, df)
+
+        app.logger.info("Finished Loading Data...")
+
 @app.route("/")
 def index():
     """Check for API_KEY"""
@@ -21,28 +45,6 @@ def index():
     return render_template("hello.html")
 
 if __name__ == "__main__":
-    print("started")
     # Check environmental variable to see if data's loadeds
-    # Load data if it hasn't been
-    # Clear data for now
-    clear_data(db.session, db.session.metadata)
     # del os.environ["DATA_LOADED"]
-
-    # Generate same schema as the application
-    # db.metadata.create_all(engine)
-
-    # Establish connection with database
-    # db_session = sessionmaker(bind=engine)
-    # session = db_session()
-
-    # Clear all tables in the database
-    # clear_data(session)
-    # Add to tables
-    # addModels(session)
-
-    raw_sched = getSchedule()
-    course_info = parseSchedule(raw_sched)
-    df = storeSchedule(course_info)
-    load(db.session, df)
-
     app.run()

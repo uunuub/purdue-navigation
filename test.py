@@ -68,5 +68,13 @@ if __name__ == "__main__":
 	df = storeSchedule(course_info)
 	load(db.session, df)
 
+
+	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
+	option = join_tables.filter(Number.number.like(18000)).all()
+
+	for i in option:
+		print(i.name, i.number, i.stype, i.building)
+
+
 	db.session.close()
 
