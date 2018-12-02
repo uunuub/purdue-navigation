@@ -1,8 +1,24 @@
 import React, { Component } from 'react';
-import SearchBar from 'material-ui-search-bar'
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import { withStyles } from "@material-ui/core/styles";
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
+
+const styles = {
+  button:{
+    height: 56,
+  },
+  input:{
+    color: 'white',
+  },
+  textField: {
+    width: 500,
+  }
+};
 
 class Search extends Component {
-
   state = {
     query: '',
   }
@@ -14,23 +30,28 @@ class Search extends Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
-      <div className="App">
-        <header className="App-header">
+      <div>
           <p>
-            Is It Empty???
+            Room Finder
           </p>
-          <form>
-            <input
-              placeholder="Search buildings..."
-              ref = {input => this.search = input}
-              onChange = {this.handleInputChange}/>
-          </form>
-          <button>Search</button>
-        </header>
+          <div>
+            <TextField 
+              classes={{root: classes.textField}}
+              variant="outlined" 
+              label="Search Buildings..."
+              autoFocus
+            />
+            <Button classes={{root: classes.button}} color="secondary" size="small" variant="outlined" >
+              <Icon>
+                search
+              </Icon>
+            </Button>
+          </div>
       </div>
     );
   }
 }
 
-export default Search;
+export default withStyles(styles)(Search);
