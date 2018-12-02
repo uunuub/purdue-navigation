@@ -17,34 +17,45 @@ db.create_all(app=app)
 
 @app.cli.command()
 def init():
-    with app.app_context():
-        # Log Loading
-        app.logger.info("Start Loading Data...")
-        
-        # Clear data in database
-        clear_data(db.session, db.metadata)
+	with app.app_context():
+		# Log Loading
+		app.logger.info("Start Loading Data...")
+		
+		# Clear data in database
+		clear_data(db.session, db.metadata)
 
-        # Get Raw HTML with schedule
-        raw_sched = getSchedule()
+		# Get Raw HTML with schedule
+		raw_sched = getSchedule()
 
-        # Parse HTML and store schedule into dataframe
-        course_info = parseSchedule(raw_sched)
-        df = storeSchedule(course_info)
+		# Parse HTML and store schedule into dataframe
+		course_info = parseSchedule(raw_sched)
+		df = storeSchedule(course_info)
 
-        # Load data into database
-        load(db.session, df)
+		# Load data into database
+		load(db.session, df)
 
-        app.logger.info("Finished Loading Data...")
+		app.logger.info("Finished Loading Data...")
+
+@app.route("/api/courses", methods=["GET"])
+def courses():
+	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
+	option = join_tables.filter(Number.number.like(18000)).all()
+
+	temp = ""
+	for i in option:
+		print("Course Name:", type(i.name))
+		temp += i.name + i.number + i.stype + i.building
+	return temp
 
 @app.route("/")
 def index():
-    """Check for API_KEY"""
-    if not os.environ.get("API_KEY"):
-        raise RuntimeError("API_KEY not set")
-    #return render_template("index.html", key=os.environ.get("API_KEY"))
-    return render_template("hello.html")
+	"""Check for API_KEY"""
+	if not os.environ.get("API_KEY"):
+		raise RuntimeError("API_KEY not set")
+	#return render_template("index.html", key=os.environ.get("API_KEY"))
+	return render_template("hello.html")
 
 if __name__ == "__main__":
-    # Check environmental variable to see if data's loadeds
-    # del os.environ["DATA_LOADED"]
-    app.run()
+	# Check environmental variable to see if data's loadeds
+	# del os.environ["DATA_LOADED"]
+	app.run()
