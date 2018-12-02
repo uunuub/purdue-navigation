@@ -8,7 +8,12 @@ class App extends Component {
   constructor (){
     super()
 
-    let testRooms = [
+    //Hard-coded sample room list
+    //Object:
+    //name: string (Room name)
+    //free: boolean (If its free or used)
+    //change: string (When the room changes to a different state)
+    let sampleRooms = [
       {name: "Room 1", free: 1, change: "1:30"},
       {name: "Room 2", free: 1, change: "2:30"},
       {name: "Room 3", free: 0, change: "5:30"},
@@ -19,16 +24,15 @@ class App extends Component {
     ]
 
     this.state = {
-      testRooms: testRooms
+      sampleRooms
     }    
   }
-
 
 
   render() {
     return (
       <div className="App">
-        <RoomList rooms={this.state.testRooms} propTest="pleaseworkman" />
+        <RoomList rooms={this.state.sampleRooms} />
       </div>
     );
   }

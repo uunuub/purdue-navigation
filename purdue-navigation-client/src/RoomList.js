@@ -4,25 +4,26 @@ import './RoomList.css';
 class RoomList extends Component {
 
   constructor (props){
+    //Accept list of rooms from App.js
     super(props)
-    // this.constructor.bind(this)
-
-    let testRooms = this.props.rooms
+    let rooms = this.props.rooms
     let roomArray = []
 
-    for (let i = 0; i < testRooms.length; i++){
-      if (testRooms[i].free === 1){
-        roomArray.push(React.createElement("li", {className: "Room-box-free"}, (testRooms[i].name + " - Free until " + testRooms[i].change)))
+    //Converts the list of rooms to HTML Elements
+    for (let i = 0; i < rooms.length; i++){
+      if (rooms[i].free === 1){
+        roomArray.push(React.createElement("li", {className: "Room-box-free"}, (rooms[i].name + " - Free until " + rooms[i].change)))
       }
       else{
-        roomArray.push(React.createElement("li", {className: "Room-box-used"}, (testRooms[i].name + " - Used until " + testRooms[i].change)))
+        roomArray.push(React.createElement("li", {className: "Room-box-used"}, (rooms[i].name + " - Used until " + rooms[i].change)))
       }
     }
 
     this.state = {
-      roomList: roomArray
+      roomArray
     }    
   }
+
 
   render() {
     return (
@@ -30,11 +31,10 @@ class RoomList extends Component {
         <header>
           <p>
             Building
-            {this.props.propTest}
           </p>
         </header>
         <ul>
-          {this.state.roomList}
+          {this.state.roomArray}
         </ul>
       </div>
     );
