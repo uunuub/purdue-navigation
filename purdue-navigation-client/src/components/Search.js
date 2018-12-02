@@ -15,7 +15,27 @@ const styles = {
   },
   textField: {
     width: 500,
-  }
+  },
+  cssLabel: {
+    color : 'white'
+  },
+  cssOutlinedInput: {
+    '&$cssFocused $notchedOutline': {
+      borderColor: `blue !important`,
+      color: 'white',
+    }
+  },
+
+  cssFocused: {
+      borderColor: `blue !important`,
+      color: 'white',
+  },
+
+  notchedOutline: {
+    borderWidth: '1px',
+    borderColor: 'white !important'
+  },
+
 };
 
 class Search extends Component {
@@ -42,6 +62,20 @@ class Search extends Component {
               variant="outlined" 
               label="Search Buildings..."
               autoFocus
+              InputLabelProps={{
+                classes:{
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused,
+                },
+              }}
+              InputProps={{
+                classes:{
+                  root: classes.cssOutlinedInput,
+                  input: classes.cssLabel,
+                  notchedOutline: classes.notchedOutline,
+                  focused: classes.cssFocused,
+                }
+              }}
             />
             <Button classes={{root: classes.button}} color="secondary" size="small" variant="outlined" >
               <Icon>
