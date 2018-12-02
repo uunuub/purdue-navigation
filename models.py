@@ -113,6 +113,19 @@ class Course(Base):
 	instructor = db.relationship("Instructor", backref=db.backref("courses", lazy="dynamic"))
 	time = db.relationship("Time", backref=db.backref("courses", lazy="dynamic"))
 
+	
+	def to_json(self):
+		return {
+			"name": self.name,
+			"number": self.number,
+			"subject": self.subject,
+			"crn": self.crn,
+			"building": self.building,
+			"room": self.room,
+			"type": self.stype,
+			"instructor": self.instructor,
+			"time": self.time
+		}
 
 
 

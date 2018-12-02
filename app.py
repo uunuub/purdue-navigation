@@ -1,7 +1,8 @@
 import os, re
 
 import click
-from flask import Flask, jsonify, render_template, request, flash, url_for, session, jsonify
+from flask import Flask, jsonify, render_template, request 
+from flask import flash, url_for, session, jsonify, Response
 from flask_script import Manager, Server
 
 from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
@@ -41,11 +42,8 @@ def courses():
 	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
 	option = join_tables.filter(Number.number.like(18000)).all()
 
-	temp = ""
-	for i in option:
-		print("Course Name:", type(i.name))
-		temp += i.name + i.number + i.stype + i.building
-	return temp
+	print(type(option[0]))
+	return jsonify(option[0])
 
 @app.route("/")
 def index():
