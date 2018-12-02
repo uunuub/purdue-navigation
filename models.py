@@ -42,6 +42,8 @@ class Room(Base):
 	__tablename__ = "room" 
 	room = db.Column(db.String(50))
 	
+	building_id = db.Column(db.Integer, db.ForeignKey("building.id"))
+
 	def __repr__(self):
 		return self.room
  
@@ -50,6 +52,8 @@ class Building(Base):
 	__tablename__ = "building" 
 	building = db.Column(db.String(50), unique=True)
 	
+	rooms = db.relationship("Room", backref=db.backref("building"))
+
 	def __repr__(self):
 		return self.building
 

@@ -39,7 +39,7 @@ def init():
 
 		app.logger.info("Finished Loading Data...")
 
-@app.route("/api/courses", methods=["GET"])
+@app.route("/api/courses")
 def api_courses():
 	if not request.args.get("building") or not request.args.get("room"):
 		return jsonify({"message": "no building or room given"})
@@ -55,6 +55,17 @@ def api_courses():
 	courses = {"Courses": [course.to_json() for course in option]}
 
 	return jsonify(courses)
+
+@app.route("/api/buildings/<building>", methods=["GET"])
+def api_building_rooms(building):
+	# Check if building exists
+	query_building = Building.query.filter(Building.building == building).first()
+	if not query_building:
+		return jsonify({"message": "building does not exist"})
+
+	# Get rooms of building
+	rooms = {"Rooms": [room.room for room in query_building.rooms]}
+	return jsonify(rooms)
 
 @app.route("/api/buildings", methods=["GET"])
 def api_buildings():

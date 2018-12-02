@@ -195,14 +195,21 @@ def load(session, df):
 	print(df.to_string())
 	# Iterate over each courses
 	for index, row in df.iterrows():
+		# Set room to point to building
+		building = Building.query.filter_by(building=row["building"]).first()
+		room = Room.query.filter_by(room=row["room"]).first()
+		building.rooms.append(room)
+
 		session.add(Course(name_id=Name.query.filter_by(name=row["name"]).first().id,
 							number_id=Number.query.filter_by(number=row["number"]).first().id,
 							subject_id=Subject.query.filter_by(subject=row["subject"]).first().id,
 							crn_id=CRN.query.filter_by(crn=row["crn"]).first().id,
-							building_id=Building.query.filter_by(building=row["building"]).first().id,
-							room_id=Room.query.filter_by(room=row["room"]).first().id,
+							building_id=building.id,
+							room_id=room.id,
 							type_id=Type.query.filter_by(stype=row["stype"]).first().id,
 							instructor_id=Instructor.query.filter_by(instructor=row["instructor"]).first().id,
 							time_id=Time.query.filter_by(start_time=row["time"][0], end_time=row["time"][1]).first().id,
 							days=row["days"]))	
 		session.commit()
+
+	# print(Building.query.filter(Building.building == "Felix Haas Hall").first().rooms)
