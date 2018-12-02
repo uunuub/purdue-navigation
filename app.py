@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
 from load import getSchedule, parseSchedule, storeSchedule, load, clear_data
 app = Flask(__name__)
+migrate = Migrate(app, db)
 
 # Load config
 app.config.from_object("config")
@@ -44,16 +45,12 @@ def api_courses():
 	if not request.args.get("building") or not request.args.get("room"):
 		return jsonify({"message": "no building or room given"})
 
-	print(request.args.get("building"), request.args.get("room"))
-
 	# Query with given parameter strings
 	join_tables = Course.query.join(Room).join(Building)
 	option = join_tables.filter(Room.room.like(request.args.get("room"))).all()
 
-	print(option)
 	# Get dictionary of the courses
 	courses = {"Courses": [course.to_json() for course in option]}
-
 	return jsonify(courses)
 
 @app.route("/api/buildings/<building>", methods=["GET"])
