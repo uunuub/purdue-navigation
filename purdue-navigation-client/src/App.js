@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import Calender from './Calender';
+import RoomList from './RoomList';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Calender />
+        <RoomList />
       </div>
     );
   }
