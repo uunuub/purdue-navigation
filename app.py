@@ -5,6 +5,7 @@ import json
 from flask import Flask, jsonify, render_template, request 
 from flask import flash, url_for, session, jsonify, Response
 from flask_script import Manager, Server
+from flask_migrate import Migrate
 
 from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
 from load import getSchedule, parseSchedule, storeSchedule, load, clear_data
@@ -39,7 +40,7 @@ def init():
 		app.logger.info("Finished Loading Data...")
 
 @app.route("/api/courses", methods=["GET"])
-def courses():
+def api_courses():
 	if not request.args.get("building") or not request.args.get("room"):
 		return jsonify({"message": "no building or room given"})
 
@@ -55,12 +56,17 @@ def courses():
 
 	return jsonify(courses)
 
+@app.route("/api/buildings", methods=["GET"])
+def api_buildings():
+	# Query for all buildings
+	query = Building.query.all()
+	buildings = {"Buildings": [building.building for building in query]}
+
+	return jsonify(buildings)
+
 @app.route("/")
 def index():
 	"""Check for API_KEY"""
-	if not os.environ.get("API_KEY"):
-		raise RuntimeError("API_KEY not set")
-	#return render_template("index.html", key=os.environ.get("API_KEY"))
 	return render_template("hello.html")
 
 if __name__ == "__main__":
