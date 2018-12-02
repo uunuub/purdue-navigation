@@ -166,6 +166,7 @@ def load(session, df):
 	pp = pprint.PrettyPrinter(indent=4)
 	# pp.pprint(uniques)
 
+	print(df.to_string())
 	# Dictionary containing class objects
 	models = {
 		"name": Name,
@@ -175,16 +176,19 @@ def load(session, df):
 		"subject": Subject,
 		"instructor": Instructor,
 		"stype": Type,
-		"room": Room,
-		"time": Time
+		"room": Room
 	}
 
 	# Write unique values to database
 	for k, vals in uniques.items():
-		if k == "time" or k == "days":
+		if k == "days":
 			continue
-		for v in vals:		
-			session.add(models[k](**{k: v}))
+		if k == "time":
+			for v in vals:		
+				session.add(Time(start_time=v[0], end_time=v[1]))
+		else:
+			for v in vals:		
+				session.add(models[k](**{k: v}))
 	session.commit()
 
 
@@ -199,5 +203,6 @@ def load(session, df):
 							room_id=Room.query.filter_by(room=row["room"]).first().id,
 							type_id=Type.query.filter_by(stype=row["stype"]).first().id,
 							instructor_id=Instructor.query.filter_by(instructor=row["instructor"]).first().id,
+							time_id=Time.query.filter_by(start_time=row["time"][0], end_time=row["time"][1]).first().id,
 							days=row["days"]))	
 		session.commit()

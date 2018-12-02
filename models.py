@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-
 # Intatiate SQLAlchemy object
 db = SQLAlchemy()
 
@@ -116,15 +115,16 @@ class Course(Base):
 	
 	def to_json(self):
 		return {
-			"name": self.name,
-			"number": self.number,
-			"subject": self.subject,
-			"crn": self.crn,
-			"building": self.building,
-			"room": self.room,
-			"type": self.stype,
-			"instructor": self.instructor,
-			"time": self.time
+			"name": self.name.name,
+			"number": self.number.number,
+			"subject": self.subject.subject,
+			"crn": self.crn.crn,
+			"building": self.building.building,
+			"room": self.room.room,
+			"type": self.stype.stype,
+			"instructor": self.instructor.instructor,
+			"start_time": self.time.start_time.strftime("%H %M"),
+			"end_time": self.time.end_time.strftime("%H %M")
 		}
 
 

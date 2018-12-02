@@ -1,6 +1,7 @@
 import os, re
 
 import click
+import json
 from flask import Flask, jsonify, render_template, request 
 from flask import flash, url_for, session, jsonify, Response
 from flask_script import Manager, Server
@@ -39,11 +40,20 @@ def init():
 
 @app.route("/api/courses", methods=["GET"])
 def courses():
-	join_tables = Course.query.join(Name).join(Number).join(Type).join(Building)
-	option = join_tables.filter(Number.number.like(18000)).all()
+	if not request.args.get("building") or not request.args.get("room"):
+		return jsonify({"message": "no building or room given"})
 
-	print(type(option[0]))
-	return jsonify(option[0])
+	print(request.args.get("building"), request.args.get("room"))
+
+	# Query with given parameter strings
+	join_tables = Course.query.join(Room).join(Building)
+	option = join_tables.filter(Room.room.like(request.args.get("room"))).all()
+
+	print(option)
+	# Get dictionary of the courses
+	courses = {"Courses": [course.to_json() for course in option]}
+
+	return jsonify(courses)
 
 @app.route("/")
 def index():
