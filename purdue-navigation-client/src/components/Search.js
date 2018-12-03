@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList';
 
+const api = "localhost:5000/api/buildings/"
 
 const styles = {
   button:{
@@ -72,9 +73,8 @@ class Search extends Component {
   //   redirect: false
   // }
 
-  handleInputChange = () => {
+  submit = () => {
     this.setState({
-      //query: this.search.value,
       redirect: true
     });
     console.log("CLICK");
@@ -102,6 +102,8 @@ class Search extends Component {
               variant="outlined" 
               label="Search Buildings..."
               autoFocus
+              value={this.state.query}
+              onChange={(e, newValue) => this.setState({ query: newValue})}
               InputLabelProps={{
                 classes:{
                   root: classes.cssLabel,
@@ -121,7 +123,7 @@ class Search extends Component {
               color="secondary" 
               size="small" 
               variant="outlined" 
-              onClick={this.handleInputChange}>
+              onClick={this.submit}>
               <Icon>
                 search
               </Icon>
