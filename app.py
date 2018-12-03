@@ -114,8 +114,7 @@ def api_building_rooms(building):
 		
 		roomsAvail[room] = (free, changet.strftime("%H:%M"))
 
-	rooms = {"Rooms": roomsAvail}
-	return jsonify(rooms)
+	return jsonify(roomsAvail)
 
 @app.route("/api/buildings", methods=["GET"])
 def api_buildings():
