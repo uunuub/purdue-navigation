@@ -19,6 +19,22 @@ app.config.from_object("config")
 db.init_app(app)
 db.create_all(app=app)
 
+@app.shell_context_processor
+def make_shell_context():
+	return {
+		"db": db,
+		"Time": Time, 
+		"Instructor": Instructor, 
+		"Type": Type, 
+		"Room": Room, 
+		"Building": Building, 
+		"CRN": CRN, 
+		"Number": Number, 
+		"Name": Name, 
+		"Course": Course, 
+		"Subject": Subject
+	}
+
 @app.cli.command()
 def init():
 	with app.app_context():
