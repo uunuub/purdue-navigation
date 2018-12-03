@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList';
 
-const api = "localhost:5000/api/buildings/"
+const api = "http://data.cs.purdue.edu:20000/api/buildings/"
 
 const styles = {
   button:{
@@ -43,52 +43,70 @@ const styles = {
 };
 
 class Search extends Component {
-
   constructor(){
     super()
 
-    //Hard-coded sample room list
-    //Object:
-    //name: string (Room name)
-    //free: boolean (If its free or used)
-    //change: string (When the room changes to a different state)
-    let sampleRooms = [
-      {name: "Room 1", free: 1, change: "1:30"},
-      {name: "Room 2", free: 1, change: "2:30"},
-      {name: "Room 3", free: 0, change: "5:30"},
-      {name: "Room 4", free: 0, change: "8:30"},
-      {name: "Room 5", free: 0, change: "12:30"},
-      {name: "Room 6", free: 1, change: "4:30"},
-      {name: "Room 7", free: 1, change: "3:30"},
-    ]
-
     this.state = {
-      sampleRooms,
+      isLoaded: false,
       query: '',
-      redirect: false
+      rooms: [],
+      redirect: false,
     }  
   }
-  // state = {
-  //   query: '',
-  //   redirect: false
-  // }
+  
+  handleInputChange = (e) =>{
+    this.setState({
+      query: e.target.value,
+    });
+  }
 
   submit = () => {
+    const fullRequest = api + this.state.query
+    fetch(fullRequest)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          let roomArr = [];
+
+          Object.keys(result).forEach(function(key) {
+            let roomObj = {
+              name:key,
+              free:result[key][0],
+              change:result[key][1]
+            }
+            //console.log(result[key]);
+            //console.log(roomObj);
+            roomArr.push(roomObj);
+          });
+
+          this.setState({
+            rooms: roomArr,
+          })
+          //console.log(this.state);
+          // this.setState({
+          //   sampleRooms: roomArr,
+          // })
+        },
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+
     this.setState({
       redirect: true
     });
-    console.log("CLICK");
   }
   
   render() {
+    console.log(this.state);
+    
     if (this.state.redirect === true) {
-      console.log(this.state);
-      // return <Redirect to={{
-      //   pathname:'/RoomList',
-      //   state: { from: this.state.sampleRooms }
-      //   }}/>
-      return <RoomList rooms={this.state.sampleRooms}/>
+      return <RoomList rooms={this.state.rooms}/>
     }
+
     const { classes } = this.props;
 
     return (
@@ -103,7 +121,7 @@ class Search extends Component {
               label="Search Buildings..."
               autoFocus
               value={this.state.query}
-              onChange={(e, newValue) => this.setState({ query: newValue})}
+              onChange={this.handleInputChange}
               InputLabelProps={{
                 classes:{
                   root: classes.cssLabel,
