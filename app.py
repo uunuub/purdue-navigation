@@ -9,6 +9,8 @@ from flask_migrate import Migrate
 
 from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name, Course, Subject
 from load import getSchedule, parseSchedule, storeSchedule, load, clear_data
+
+from datetime import datetime
 app = Flask(__name__)
 migrate = Migrate(app, db)
 
@@ -76,8 +78,43 @@ def api_building_rooms(building):
 	if not query_building:
 		return jsonify({"message": "building does not exist"})
 
-	# Get rooms of building
-	rooms = {"Rooms": [room.room for room in query_building.rooms]}
+	# Get all rooms with its time
+	roomsTime = {}
+	roomsAvail = {}
+	for room in query_building.rooms:
+		# Get all courses with current room
+		times = []
+		for course in Course.query.join(Room).join(Time).filter(Course.room == room).all():
+			times.append((course.time.start_time, course.time.end_time))
+		
+		roomsTime[room.room] = sorted(times)
+
+
+	# Get current time
+	curTime = datetime.now().time()
+	
+	# Set availability of each room
+	for room, classTimes in roomsTime.items():
+		# Set initial flags
+		free = True
+		changet = datetime.strptime("23:59", "%H:%M").time()
+	
+		# Go through all time frames
+		for tframe in classTimes:
+			if curTime < tframe[0]:
+
+				free = True
+				changet = tframe[0]
+				break
+			# Check if it's occupied
+			elif curTime < tframe[1]:
+				free = False
+				changet = tframe[1]
+				break
+		
+		roomsAvail[room] = (free, changet.strftime("%H:%M"))
+
+	rooms = {"Rooms": roomsAvail}
 	return jsonify(rooms)
 
 @app.route("/api/buildings", methods=["GET"])
@@ -96,4 +133,4 @@ def index():
 if __name__ == "__main__":
 	# Check environmental variable to see if data's loadeds
 	# del os.environ["DATA_LOADED"]
-	app.run()
+	app.run(host="0.0.0.0", port=20000)
