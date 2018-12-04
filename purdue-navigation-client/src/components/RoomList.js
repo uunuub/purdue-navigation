@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import './RoomList.css';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
+import { withStyles } from "@material-ui/core/styles";
+import Search from './Search';
 
-const api = "http://data.cs.purdue.edu:20000/api/buildings/"
-
+const api = "http://data.cs.purdue.edu:20000/api/buildings/";
 
 class RoomList extends Component {
 
@@ -12,6 +15,7 @@ class RoomList extends Component {
     this.state = {
       building: this.props.building,
       rooms: [],
+      redirect: false,
     }
   }
 
@@ -43,11 +47,19 @@ class RoomList extends Component {
           });
         }
       )
-    } 
+  }
+
+  submit = () => {
+    this.setState({
+      redirect: true
+    });
+  }
 
   render() {
-    console.log("PRINT ROOMS AYY");
-    console.log(this.state);
+    if (this.state.redirect === true) {
+      return <Search/>
+    }
+
     let roomArray = [];
 
     //Converts the list of rooms to HTML Elements
@@ -66,9 +78,18 @@ class RoomList extends Component {
 
     return (
       <div className="RoomList">  
+        <Button 
+          color="secondary" 
+          size="small" 
+          variant="outlined" 
+          onClick={this.submit}>
+          <Icon>
+            undo
+          </Icon>
+        </Button>
         <header>
           <p>
-            Building
+            {this.props.building}
           </p>
         </header>
         <ul>

@@ -5,7 +5,6 @@ import Icon from '@material-ui/core/Icon';
 import { withStyles } from "@material-ui/core/styles";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList';
 
 
