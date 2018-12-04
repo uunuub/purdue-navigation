@@ -56,8 +56,12 @@ class RoomList extends Component {
   }
 
   render() {
-    if (this.state.redirect === true || this.state.error === true) {
-      return <Search/>
+    if (this.state.redirect === true) {
+      return <Search status=""/>
+    }
+
+    if(this.state.error === true){
+      return <Search status="error"/>
     }
 
     let roomArray = [];

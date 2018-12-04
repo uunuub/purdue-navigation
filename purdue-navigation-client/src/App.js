@@ -18,7 +18,7 @@ class App extends Component {
     <Router>
       <div className="App">
         <header className="App-header">
-          <Search/>
+          <Search status=""/>
         </header>
         <Route path="/RoomList" component={RoomList} />
       </div>

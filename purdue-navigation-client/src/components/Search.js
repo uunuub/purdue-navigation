@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import RoomList from './RoomList';
-
+import './Search.css';
 
 const styles = {
   button:{
@@ -40,6 +40,8 @@ const styles = {
 
 };
 
+let stat = null;
+
 class Search extends Component {
   constructor(props){
     super(props);
@@ -48,7 +50,14 @@ class Search extends Component {
       isLoaded: false,
       query: '',
       redirect: false,
-    }  
+      //status: this.props.status,
+    }
+
+    if(this.props.status == "error"){
+      stat="That Building Does Not Exist";
+    }else{
+      stat = null;
+    }
   }
   
   handleInputChange = (e) =>{
@@ -62,7 +71,7 @@ class Search extends Component {
       redirect: true
     });
   }
-  
+
   render() {
     if (this.state.redirect === true) {
       console.log(this.state);
@@ -108,6 +117,9 @@ class Search extends Component {
                 search
               </Icon>
             </Button>
+          </div>
+          <div className="error">
+            {stat}
           </div>
       </div>
     );
