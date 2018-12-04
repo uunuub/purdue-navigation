@@ -16,7 +16,7 @@ class App extends Component {
   render() {
     return (
     <Router>
-      <div className="App">
+      <div >
         <header className="App-header">
           <Search status=""/>
         </header>

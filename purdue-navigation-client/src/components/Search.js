@@ -82,7 +82,7 @@ class Search extends Component {
 
     return (
       <div>
-          <p>
+          <p className="txt">
             Room Finder
           </p>
           <div>
@@ -108,7 +108,8 @@ class Search extends Component {
                 }
               }}
             />
-            <Button classes={{root: classes.button}} 
+            <Button className="btn"
+              classes={{root: classes.button}} 
               color="secondary" 
               size="small" 
               variant="outlined" 

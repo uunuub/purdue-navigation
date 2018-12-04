@@ -83,26 +83,30 @@ class RoomList extends Component {
     console.log(this.state);
 
     return (
-      <div className="RoomList">  
-        <header>
-          <div>
-            <Button 
-              color="secondary" 
-              size="small" 
-              variant="outlined" 
-              onClick={this.submit}>
-              <Icon>
-                undo
-              </Icon>
-            </Button>
-            <p>
-              {this.props.building}
-            </p>
-          </div>
-        </header>
-        <ul>
-          {this.state.roomArray}
-        </ul>
+      <div>
+        <div className="btn">
+          <Button 
+            color="secondary" 
+            size="small" 
+            variant="outlined" 
+            onClick={this.submit}>
+            <Icon>
+              undo
+            </Icon>
+          </Button>
+        </div>
+        <div className="RoomList">  
+          <header>
+            <div>
+              <p>
+                {this.props.building}
+              </p>
+            </div>
+          </header>
+          <ul>
+            {this.state.roomArray}
+          </ul>
+        </div>
       </div>
     );
   }

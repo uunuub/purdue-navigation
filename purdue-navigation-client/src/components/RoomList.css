@@ -1,7 +1,7 @@
 .RoomList {
     text-align: center;
     
-    background-color: #282c34;
+    background-color: #5B657A;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -28,4 +28,8 @@
     float: left;
     list-style-type: none;
     background: red;
+  }
+
+  .btn{
+    padding: 25px;
   }
