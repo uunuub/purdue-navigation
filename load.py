@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 import datetime
 
 import pandas as pd
-import pprint
 
 # Uncomment to enable debug requests
 # import logging
@@ -163,10 +162,6 @@ def load(session, df):
 		# Get unique values of a column
 		uniques[col] = df[col].unique().tolist()
 
-	pp = pprint.PrettyPrinter(indent=4)
-	# pp.pprint(uniques)
-
-	print(df.to_string())
 	# Dictionary containing class objects
 	models = {
 		"name": Name,
@@ -192,7 +187,7 @@ def load(session, df):
 	session.commit()
 
 
-	print(df.to_string())
+	# print(df.to_string())
 	# Iterate over each courses
 	for index, row in df.iterrows():
 		# Set room to point to building
