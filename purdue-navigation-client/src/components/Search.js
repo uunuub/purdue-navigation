@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import RoomList from './RoomList';
 
-const api = "http://data.cs.purdue.edu:20000/api/buildings/"
 
 const styles = {
   button:{
@@ -43,13 +42,12 @@ const styles = {
 };
 
 class Search extends Component {
-  constructor(){
-    super()
+  constructor(props){
+    super(props);
 
     this.state = {
       isLoaded: false,
       query: '',
-      rooms: [],
       redirect: false,
     }  
   }
@@ -61,50 +59,15 @@ class Search extends Component {
   }
 
   submit = () => {
-    const fullRequest = api + this.state.query
-    fetch(fullRequest)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          let roomArr = [];
-
-          Object.keys(result).forEach(function(key) {
-            let roomObj = {
-              name:key,
-              free:result[key][0],
-              change:result[key][1]
-            }
-            //console.log(result[key]);
-            //console.log(roomObj);
-            roomArr.push(roomObj);
-          });
-
-          this.setState({
-            rooms: roomArr,
-          })
-          //console.log(this.state);
-          // this.setState({
-          //   sampleRooms: roomArr,
-          // })
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      )
-
     this.setState({
       redirect: true
     });
   }
   
   render() {
-    console.log(this.state);
-    
     if (this.state.redirect === true) {
-      return <RoomList rooms={this.state.rooms}/>
+      console.log(this.state);
+      return <RoomList building={this.state.query}/>
     }
 
     const { classes } = this.props;
