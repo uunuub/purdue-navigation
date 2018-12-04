@@ -74,7 +74,7 @@ def api_courses():
 @app.route("/api/buildings/<building>", methods=["GET"])
 def api_building_rooms(building):
 	# Check if building exists
-	query_building = Building.query.filter(Building.building == building).first()
+	query_building = Building.query.filter(Building.building.like(building+ "%")).first()
 	if not query_building:
 		return jsonify({"message": "building does not exist"})
 
@@ -92,7 +92,7 @@ def api_building_rooms(building):
 
 	# Get current time
 	curTime = datetime.now().time()
-	
+	# curTime = datetime.strptime("11:21", "%H:%M").time()
 	# Set availability of each room
 	for room, classTimes in roomsTime.items():
 		# Set initial flags
