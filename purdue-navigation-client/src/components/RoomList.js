@@ -5,7 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import { withStyles } from "@material-ui/core/styles";
 import Search from './Search';
 
-const api = "http://data.cs.purdue.edu:20000/api/buildings/";
+const api = window.location.origin + "/api/buildings/";
 
 class RoomList extends Component {
 

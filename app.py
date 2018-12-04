@@ -3,7 +3,7 @@ import os, re
 import click
 import json
 from flask import Flask, jsonify, render_template, request, abort
-from flask import flash, url_for, session, jsonify, Response
+from flask import flash, url_for, session, jsonify, Response, send_from_directory
 from flask_script import Manager, Server
 from flask_migrate import Migrate
 
