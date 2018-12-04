@@ -16,6 +16,7 @@ class RoomList extends Component {
       building: this.props.building,
       rooms: [],
       redirect: false,
+      error: false,
     }
   }
 
@@ -42,8 +43,7 @@ class RoomList extends Component {
         },
         (error) => {
           this.setState({
-            isLoaded: true,
-            error
+            error: true,
           });
         }
       )
@@ -56,7 +56,7 @@ class RoomList extends Component {
   }
 
   render() {
-    if (this.state.redirect === true) {
+    if (this.state.redirect === true || this.state.error === true) {
       return <Search/>
     }
 
@@ -76,21 +76,25 @@ class RoomList extends Component {
       roomArray
     }   
 
+    console.log(this.state);
+
     return (
       <div className="RoomList">  
-        <Button 
-          color="secondary" 
-          size="small" 
-          variant="outlined" 
-          onClick={this.submit}>
-          <Icon>
-            undo
-          </Icon>
-        </Button>
         <header>
-          <p>
-            {this.props.building}
-          </p>
+          <div>
+            <Button 
+              color="secondary" 
+              size="small" 
+              variant="outlined" 
+              onClick={this.submit}>
+              <Icon>
+                undo
+              </Icon>
+            </Button>
+            <p>
+              {this.props.building}
+            </p>
+          </div>
         </header>
         <ul>
           {this.state.roomArray}
