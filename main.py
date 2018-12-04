@@ -11,7 +11,7 @@ from models import db, Time, Instructor, Type, Room, Building, CRN, Number, Name
 from load import getSchedule, parseSchedule, storeSchedule, load, clear_data
 
 from datetime import datetime
-app = Flask(__name__, static_folder='purdue-navigation-client/build')
+app = Flask(__name__, static_folder='./build')
 migrate = Migrate(app, db)
 
 # Load config
@@ -129,10 +129,10 @@ def api_buildings():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists("purdue-navigation-client/build/" + path):
-        return send_from_directory('purdue-navigation-client/build', path)
+    if path != "" and os.path.exists("./build/" + path):
+        return send_from_directory('./build', path)
     else:
-        return send_from_directory('purdue-navigation-client/build', 'index.html')
+        return send_from_directory('./build', 'index.html')
 
 if __name__ == "__main__":
 	# Check environmental variable to see if data's loadeds

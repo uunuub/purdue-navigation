@@ -1,0 +1,6 @@
+runtime: python37
+
+skip_files:
+  .*
+  __pycache__
+  purdue-navigation-client
