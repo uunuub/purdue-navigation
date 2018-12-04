@@ -7,7 +7,8 @@ cd purdue-navigation-client && npm install
 npm run build
 
 # Move build to above for flask to use
-mv build ../ && cd ..
+mv build ../
+cd ..
 
 # Deploy 
-gcloud app deploy
+gcloud app deploy app.yaml
