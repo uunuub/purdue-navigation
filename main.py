@@ -1,4 +1,4 @@
-import os, re, click
+import os, re, click, logging
 from flask import Flask, jsonify, request, abort
 from flask import url_for, session, jsonify, send_from_directory
 from flask_migrate import Migrate
@@ -10,14 +10,21 @@ import config
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# Add gcloud debugger
+try:
+  import googleclouddebugger
+  googleclouddebugger.enable()
+except ImportError:
+  pass
+
 # Background scheduler that updates the database every 24 hours
 def updateDb():
 	os.environ["DATABASE_UPDATING"] = "1"
-	os.system("flask init")
+	init()
 	del os.environ["DATABASE_UPDATING"]
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(updateDb, "interval", hours=1)
+scheduler.add_job(updateDb, "interval", hours=24)
 scheduler.start()
 
 # Instantiate app
@@ -48,10 +55,13 @@ def make_shell_context():
 	}
 
 @app.cli.command()
+def schedule():
+	init()
+
 def init():
 	with app.app_context():
 		# Log Loading
-		app.logger.info("Start Loading Data...")
+		logging.info("Start Loading Data...")
 		
 		# Clear data in database
 		clear_data(db.session, db.metadata)
@@ -66,7 +76,7 @@ def init():
 		# Load data into database
 		load(db.session, df)
 
-		app.logger.info("Finished Loading Data...")
+		logging.info("Finished Loading Data...")
 
 @app.route("/api/courses")
 def api_courses():
@@ -88,7 +98,7 @@ def api_building_rooms(building):
 	if not query_building:
 		abort(404)
 
-	print(query_building.building)
+	logging.info("Building: {}".format(query_building.building))
 	# Get all rooms with its time
 	roomsTime = {}
 	roomsAvail = {}
@@ -113,7 +123,6 @@ def api_building_rooms(building):
 		# Go through all time frames
 		for tframe in classTimes:
 			if curTime < tframe[0]:
-
 				free = True
 				changet = tframe[0]
 				break
@@ -122,10 +131,12 @@ def api_building_rooms(building):
 				free = False
 				changet = tframe[1]
 				break
-		
 		roomsAvail[room] = (free, changet.strftime("%H:%M"))
 
-	return jsonify(roomsAvail)
+	building_rooms = {
+		"Building": query_building.building,
+		"Rooms": roomsAvail}
+	return jsonify(building_rooms)
 
 @app.route("/api/buildings", methods=["GET"])
 def api_buildings():

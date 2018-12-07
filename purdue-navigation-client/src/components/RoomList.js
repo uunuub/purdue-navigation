@@ -27,7 +27,11 @@ class RoomList extends Component {
       .then(res => res.json())
       .then(
         (result) => {
+          // Save actual name of building
+          let actualName = result["Building"]
+          result = result["Rooms"]
           let tempArr = []
+
           Object.keys(result).forEach(function(key) {
             let roomObj = {
               name:key,
@@ -39,6 +43,7 @@ class RoomList extends Component {
 
           this.setState({
             rooms: tempArr,
+            buildingName: actualName
           })
         },
         (error) => {
@@ -65,6 +70,7 @@ class RoomList extends Component {
     }
 
     let roomArray = [];
+    let buildingName = this.state.buildingName;
 
     //Converts the list of rooms to HTML Elements
     for (let i = 0; i < this.state.rooms.length; i++){
@@ -75,12 +81,10 @@ class RoomList extends Component {
         roomArray.push(React.createElement("li", {className: "Room-box-used"}, (this.state.rooms[i].name + " - Used until " + this.state.rooms[i].change)));
       }
     }
-
-    this.state = {
-      roomArray
-    }   
-
-    console.log(this.state);
+    this.state ={
+      roomArray: roomArray,
+      buildingName: buildingName
+    };
 
     return (
       <div>
@@ -99,7 +103,7 @@ class RoomList extends Component {
           <header>
             <div>
               <p>
-                {this.props.building}
+                {this.state.buildingName}
               </p>
             </div>
           </header>

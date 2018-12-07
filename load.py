@@ -187,7 +187,7 @@ def load(session, df):
 	session.commit()
 
 
-	# print(df.to_string())
+	print(df.to_string())
 	# Iterate over each courses
 	for index, row in df.iterrows():
 		# Set room to point to building

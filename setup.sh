@@ -7,6 +7,7 @@ cd purdue-navigation-client && npm install
 npm run build
 
 # Move build to above for flask to use
+rm -rf ../build
 mv build ../
 cd ..
 
